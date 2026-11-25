@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="tv.bestseat.helper">
+
+    <!-- Overlays and starting apps from the background.
+         Grant via adb: appops set tv.bestseat.helper SYSTEM_ALERT_WINDOW allow -->
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <!-- Which app is in front. Grant via adb: appops set tv.bestseat.helper GET_USAGE_STATS allow -->
+    <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS" />
+    <!-- Start activities of other apps, launcher detection. -->
+    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" />
+    <!-- Screen timeout: screen_off_timeout. Grant via adb: appops set tv.bestseat.helper WRITE_SETTINGS allow -->
+    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+    <!-- Screen timeout (screensaver_enabled), Accessibility guard (enabled_accessibility_services).
+         Grant via adb: pm grant tv.bestseat.helper android.permission.WRITE_SECURE_SETTINGS -->
+    <uses-permission android:name="android.permission.WRITE_SECURE_SETTINGS" />
+    <!-- System apps, Backup, Autostart: connection to the TV's own adb service (127.0.0.1:5555). -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <uses-feature android:name="android.software.leanback" android:required="false" />
+    <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
+
+    <application
+        android:label="Best Seat Helper"
+        android:icon="@mipmap/ic_launcher"
+        android:banner="@drawable/banner"
+        android:allowBackup="false">
+
+        <!-- Only launcher entry: list of helpers. Banner and icon also on the activity,
+             for launchers that only look there. -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:label="Best Seat Helper"
+            android:icon="@mipmap/ic_launcher"
+            android:banner="@drawable/banner"
+            android:theme="@android:style/Theme.Material.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- Setup wizard pages without a helper. -->
+        <activity
+            android:name=".SetupActivity"
+            android:exported="false"
+            android:theme="@android:style/Theme.Material.NoActionBar" />
+
+        <!-- Settings of a helper. -->
+        <activity
+            android:name=".DetailActivity"
+            android:exported="false"
+            android:theme="@android:style/Theme.Material.NoActionBar" />
+
+        <!-- The single foreground service for helpers that run continuously. -->
+        <service
+            android:name=".HostService"
+            android:exported="false"
+            android:foregroundServiceType="specialUse">
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="Keeps small TV helpers running, e.g. the accessibility guard and autostart." />
+        </service>
+
+        <!-- The single accessibility service for all helpers. Never rename it, or it drops out of
+             enabled_accessibility_services. The helpers set what it watches at runtime. -->
+        <service
+            android:name=".HostAccessibilityService"
+            android:label="Best Seat Helper"
+            android:exported="true"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
+            <intent-filter>
+                <action android:name="android.accessibilityservice.AccessibilityService" />
+            </intent-filter>
+            <meta-data
+                android:name="android.accessibilityservice"
+                android:resource="@xml/accessibility_service" />
+        </service>
+
+        <!-- Invisible "Refresh home screen" command for remote key apps. -->
+        <activity
+            android:name=".RefreshActivity"
+            android:label="Refresh home screen"
+            android:exported="true"
+            android:excludeFromRecents="true"
+            android:noHistory="true"
+            android:taskAffinity=""
+            android:theme="@android:style/Theme.NoDisplay">
+            <intent-filter>
+                <action android:name="tv.bestseat.helper.REFRESH_HOME" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+
+        <!-- Refresh home screen: toggling it sends PACKAGE_CHANGED, so the launcher reloads its apps. -->
+        <receiver
+            android:name=".RefreshPingReceiver"
+            android:enabled="false"
+            android:exported="false" />
+
+        <receiver
+            android:name=".BootReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+            </intent-filter>
+        </receiver>
+    </application>
+</manifest>

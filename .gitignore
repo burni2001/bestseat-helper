@@ -1,0 +1,7 @@
+build/
+*.keystore
+*.jks
+*.env
+*.profraw
+icon-entwuerfe/
+.DS_Store

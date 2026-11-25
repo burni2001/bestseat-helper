@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="service_description">Runs the helpers of Best Seat Helper. Remote keys watches the remote keys and only consumes keys you mapped.</string>
+</resources>
