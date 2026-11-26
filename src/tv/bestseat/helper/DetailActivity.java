@@ -42,6 +42,10 @@ public final class DetailActivity extends Activity {
     private static final String GROUP_TOP = "group-top";
     private static final float DISABLED_ALPHA = 0.35f;
     private Hint hint;
+    /** Row that grants the helper's missing permission; hidden while nothing is missing. */
+    private LinearLayout fixRow;
+    private TextView fixTitle;
+    private TextView fixValue;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -114,6 +118,25 @@ public final class DetailActivity extends Activity {
         LinearLayout.LayoutParams panelParams = rowParams();
         panelParams.bottomMargin = dp(18);
         column.addView(panel, panelParams);
+
+        fixRow = Ui.row(this);
+        fixTitle = Ui.text(this, "", 18, Ui.TEXT, true);
+        fixRow.addView(fixTitle, Ui.fill());
+        fixValue = Ui.text(this, "", 16, Ui.TEXT_DIM, false);
+        fixRow.addView(fixValue);
+        fixRow.setOnClickListener(v -> {
+            String id = PermissionFix.missing(this, helper);
+            if (id != null) {
+                PermissionFix.fix(this, id, this::show);
+            }
+        });
+        hint.attach(fixRow, () -> {
+            String id = PermissionFix.missing(this, helper);
+            return id == null ? "" : PermissionFix.hint(this, id);
+        });
+        LinearLayout.LayoutParams fixParams = rowParams();
+        fixParams.bottomMargin = dp(18);
+        column.addView(fixRow, fixParams);
 
         // Build all rows first, then place them: choice rows with afterSetting go directly below
         // their switch (e.g. "Netflix key target" below "Netflix key").
@@ -249,6 +272,13 @@ public final class DetailActivity extends Activity {
             mainToggle.setChecked(Prefs.enabled(this, helper));
         }
         details.setText(s.detail == null ? "" : s.detail);
+        String missing = Prefs.enabled(this, helper) ? PermissionFix.missing(this, helper) : null;
+        boolean showFix = missing != null;
+        fixRow.setVisibility(showFix ? View.VISIBLE : View.GONE);
+        if (showFix) {
+            fixTitle.setText("Grant " + PermissionFix.title(missing));
+            fixValue.setText(PermissionFix.busy(missing) ? "Waiting for the TV…" : "");
+        }
         details.setVisibility(s.detail == null || s.detail.isEmpty() ? View.GONE : View.VISIBLE);
         for (int i = 0; i < settings.size(); i++) {
             toggles.get(i).setChecked(Prefs.setting(this, helper, settings.get(i)));

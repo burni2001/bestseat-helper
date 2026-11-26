@@ -64,6 +64,11 @@ final class AppKeysHelper extends Helper {
     }
 
     @Override
+    String[] permissions() {
+        return new String[]{PermissionFix.USAGE};
+    }
+
+    @Override
     String missingPermission(Context context) {
         return Perms.usageAccess(context) ? null : "Usage access is missing";
     }

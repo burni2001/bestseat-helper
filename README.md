@@ -29,7 +29,9 @@ A setup wizard on first start walks you through the settings that depend on your
 
 ## Permissions
 
-Some helpers need permissions that can only be granted with adb. The app shows which ones are missing under **Permissions**.
+Some helpers need permissions that Android TV has no settings screen for. The app shows which ones are missing under **Permissions** and in the setup wizard. Select a missing permission to grant it: the app opens the settings screen if the TV has one, or grants it through the TV's own network debugging (see below).
+
+You can also grant them from a computer with adb:
 
 ```bash
 adb shell appops set tv.bestseat.helper GET_USAGE_STATS allow

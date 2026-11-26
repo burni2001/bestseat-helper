@@ -79,6 +79,11 @@ final class AccessibilityGuardHelper extends Helper {
     }
 
     @Override
+    String[] permissions() {
+        return new String[]{PermissionFix.SECURE};
+    }
+
+    @Override
     String missingPermission(Context context) {
         return Perms.writeSecure(context) ? null : "Secure settings permission is missing";
     }

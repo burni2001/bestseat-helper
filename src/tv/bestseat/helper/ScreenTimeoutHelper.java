@@ -62,6 +62,11 @@ final class ScreenTimeoutHelper extends Helper {
     }
 
     @Override
+    String[] permissions() {
+        return new String[]{PermissionFix.WRITE_SETTINGS, PermissionFix.SECURE};
+    }
+
+    @Override
     String missingPermission(Context context) {
         if (!Settings.System.canWrite(context)) {
             return "Permission to change settings is missing";

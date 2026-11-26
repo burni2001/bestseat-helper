@@ -65,6 +65,11 @@ abstract class Helper {
         return false;
     }
 
+    /** Permissions the helper needs (PermissionFix ids), apart from the accessibility service. */
+    String[] permissions() {
+        return new String[0];
+    }
+
     /** Missing permission as a short text, or null. */
     String missingPermission(Context context) {
         return null;

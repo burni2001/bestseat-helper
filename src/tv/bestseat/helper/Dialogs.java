@@ -41,24 +41,42 @@ final class Dialogs {
         LinearLayout panel = panel(a);
         Dialog dialog = show(a, panel);
         panel.addView(Ui.text(a, "Permissions", 26, Ui.TEXT, true));
-        TextView sub = Ui.text(a, "Granted once via adb. Needed only by the helpers you use.", 14, Ui.TEXT_DIM, false);
+        TextView sub = Ui.text(a, "Select a missing permission to grant it. Each helper only needs some of them.", 14, Ui.TEXT_DIM, false);
         sub.setPadding(0, Ui.dp(a, 2), 0, 0);
         panel.addView(sub);
         permissionItems(a, panel);
         closeButton(a, panel, dialog);
     }
 
-    private static void item(Activity a, LinearLayout panel, String name, boolean ok, String how) {
-        LinearLayout line = new LinearLayout(a);
+    /**
+     * One permission line. A missing permission becomes a focusable row: OK opens its settings
+     * screen or grants it through debugging (PermissionFix).
+     */
+    private static void item(Activity a, LinearLayout panel, String name, String id) {
+        boolean ok = PermissionFix.granted(a, id);
+        LinearLayout line = ok ? new LinearLayout(a) : Ui.row(a);
         line.setOrientation(LinearLayout.HORIZONTAL);
         line.setGravity(Gravity.CENTER_VERTICAL);
-        line.setPadding(0, Ui.dp(a, 10), 0, 0);
         line.addView(Ui.text(a, name, 17, Ui.TEXT, true), Ui.fill());
-        line.addView(Ui.text(a, ok ? "On" : "Off", 16, ok ? Status.GOOD : Status.BAD, true));
-        panel.addView(line);
-        if (!ok) {
-            panel.addView(Ui.text(a, how, 13, Ui.TEXT_DIM, false));
+        TextView value = Ui.text(a, ok ? "On" : "Off", 16, ok ? Status.GOOD : Status.BAD, true);
+        line.addView(value);
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        params.topMargin = Ui.dp(a, ok ? 10 : 8);
+        panel.addView(line, params);
+        if (ok) {
+            return;
         }
+        TextView hint = Ui.text(a, PermissionFix.hint(a, id), 13, Ui.TEXT_DIM, false);
+        hint.setPadding(Ui.dp(a, 20), Ui.dp(a, 4), 0, 0);
+        panel.addView(hint);
+        Runnable update = () -> {
+            boolean now = PermissionFix.granted(a, id);
+            value.setText(PermissionFix.busy(id) ? "Waiting for the TV…" : now ? "On" : "Off");
+            value.setTextColor(now ? Status.GOOD : Status.BAD);
+            hint.setVisibility(now ? View.GONE : View.VISIBLE);
+        };
+        line.setOnClickListener(v -> PermissionFix.fix(a, id, update));
     }
 
     static LinearLayout panel(Activity a) {
@@ -159,20 +177,12 @@ final class Dialogs {
 
     /** The permissions with state and adb command; also used in the setup wizard. */
     static void permissionItems(Activity a, LinearLayout panel) {
-        String pkg = a.getPackageName();
-        item(a, panel, "Accessibility service", Hub.accessibility() != null,
-                "Settings › Accessibility › Best Seat Helper");
-        item(a, panel, "Usage access", Perms.usageAccess(a),
-                "appops set " + pkg + " GET_USAGE_STATS allow");
-        item(a, panel, "Display over other apps", Perms.overlay(a),
-                "appops set " + pkg + " SYSTEM_ALERT_WINDOW allow");
-        item(a, panel, "No battery restrictions", Perms.batteryExempt(a),
-                "cmd deviceidle whitelist +" + pkg);
-        item(a, panel, "Change settings (Screen timeout)", android.provider.Settings.System.canWrite(a),
-                "appops set " + pkg + " WRITE_SETTINGS allow");
-        item(a, panel, "Secure settings (Screen timeout, Accessibility guard)", Perms.writeSecure(a),
-                "pm grant " + pkg + " android.permission.WRITE_SECURE_SETTINGS");
-        item(a, panel, "Debugging access (System apps)", SystemAppsHelper.adbOk(),
-                "System apps › Debugging access, then “Always allow” on the TV");
+        item(a, panel, "Accessibility service", PermissionFix.ACCESSIBILITY);
+        item(a, panel, "Usage access", PermissionFix.USAGE);
+        item(a, panel, "Display over other apps", PermissionFix.OVERLAY);
+        item(a, panel, "No battery restrictions", PermissionFix.BATTERY);
+        item(a, panel, "Change settings (Screen timeout)", PermissionFix.WRITE_SETTINGS);
+        item(a, panel, "Secure settings (Screen timeout, Accessibility guard)", PermissionFix.SECURE);
+        item(a, panel, "Debugging access (System apps)", PermissionFix.DEBUGGING);
     }
 }

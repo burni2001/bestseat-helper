@@ -40,7 +40,7 @@ public class SetupActivity extends Activity {
                 break;
             case "permissions":
                 title(column, "Permissions");
-                text(column, "Grant these once from a computer with adb. Each helper only needs some of them.");
+                text(column, "Select a missing permission to grant it. Each helper only needs some of them.");
                 Dialogs.permissionItems(this, column);
                 first = row(column, "Check again", this::recreate);
                 break;
@@ -74,5 +74,12 @@ public class SetupActivity extends Activity {
         p.topMargin = Ui.dp(this, 14);
         column.addView(r, p);
         return r;
+    }
+
+    /** Back from a settings screen: show the new permission state. */
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        recreate();
     }
 }
