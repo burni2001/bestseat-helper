@@ -9,9 +9,7 @@
     <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS" />
     <!-- Start activities of other apps, launcher detection. -->
     <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" />
-    <!-- Screen timeout: screen_off_timeout. Grant via adb: appops set tv.bestseat.helper WRITE_SETTINGS allow -->
-    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
-    <!-- Screen timeout (screensaver_enabled), Accessibility guard (enabled_accessibility_services).
+    <!-- Accessibility guard (enabled_accessibility_services).
          Grant via adb: pm grant tv.bestseat.helper android.permission.WRITE_SECURE_SETTINGS -->
     <uses-permission android:name="android.permission.WRITE_SECURE_SETTINGS" />
     <!-- System apps, Backup, Autostart: connection to the TV's own adb service (127.0.0.1:5555). -->

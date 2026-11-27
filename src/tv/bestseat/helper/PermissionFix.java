@@ -22,7 +22,6 @@ final class PermissionFix {
     static final String USAGE = "usage";
     static final String OVERLAY = "overlay";
     static final String BATTERY = "battery";
-    static final String WRITE_SETTINGS = "write_settings";
     static final String SECURE = "secure";
     static final String DEBUGGING = "debugging";
 
@@ -42,8 +41,6 @@ final class PermissionFix {
                 return Perms.overlay(c);
             case BATTERY:
                 return Perms.batteryExempt(c);
-            case WRITE_SETTINGS:
-                return Settings.System.canWrite(c);
             case SECURE:
                 return Perms.writeSecure(c);
             case DEBUGGING:
@@ -63,8 +60,6 @@ final class PermissionFix {
                 return "Display over other apps";
             case BATTERY:
                 return "No battery restrictions";
-            case WRITE_SETTINGS:
-                return "Change settings";
             case SECURE:
                 return "Secure settings";
             default:
@@ -121,8 +116,6 @@ final class PermissionFix {
                 return "appops set " + pkg + " SYSTEM_ALERT_WINDOW allow";
             case BATTERY:
                 return "cmd deviceidle whitelist +" + pkg;
-            case WRITE_SETTINGS:
-                return "appops set " + pkg + " WRITE_SETTINGS allow";
             case SECURE:
                 return "pm grant " + pkg + " android.permission.WRITE_SECURE_SETTINGS";
             case DEBUGGING:

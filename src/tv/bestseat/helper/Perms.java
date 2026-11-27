@@ -27,7 +27,7 @@ final class Perms {
         return pm.isIgnoringBatteryOptimizations(context.getPackageName());
     }
 
-    /** Write secure settings (Screen timeout, Accessibility guard). Via pm grant. */
+    /** Write secure settings (Accessibility guard). Via pm grant. */
     static boolean writeSecure(Context context) {
         return context.checkSelfPermission("android.permission.WRITE_SECURE_SETTINGS")
                 == android.content.pm.PackageManager.PERMISSION_GRANTED;

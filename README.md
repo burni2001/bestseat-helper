@@ -13,7 +13,6 @@ A setup wizard on first start walks you through the settings that depend on your
 | **Accessibility guard** | Turns watched accessibility services back on when they drop out, e.g. after Force stop. |
 | **System apps** | Turns hidden system apps on or off (stock launcher, tracking clients, any other system app you add). |
 | **Autostart** | Starts chosen apps with the TV and keeps them running. |
-| **Screen timeout** | Keeps the screen-off time and Android's screensaver the way you set them. |
 | **Refresh home screen** | Makes the launcher reload its apps, e.g. when apps on a USB drive are missing. |
 
 **Backup** saves all settings to `Download/bestseat-helper-backup.json` on the TV and restores them.
@@ -36,7 +35,6 @@ You can also grant them from a computer with adb:
 ```bash
 adb shell appops set tv.bestseat.helper GET_USAGE_STATS allow
 adb shell appops set tv.bestseat.helper SYSTEM_ALERT_WINDOW allow
-adb shell appops set tv.bestseat.helper WRITE_SETTINGS allow
 adb shell pm grant tv.bestseat.helper android.permission.WRITE_SECURE_SETTINGS
 ```
 

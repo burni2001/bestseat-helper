@@ -181,8 +181,7 @@ final class Dialogs {
         item(a, panel, "Usage access", PermissionFix.USAGE);
         item(a, panel, "Display over other apps", PermissionFix.OVERLAY);
         item(a, panel, "No battery restrictions", PermissionFix.BATTERY);
-        item(a, panel, "Change settings (Screen timeout)", PermissionFix.WRITE_SETTINGS);
-        item(a, panel, "Secure settings (Screen timeout, Accessibility guard)", PermissionFix.SECURE);
+        item(a, panel, "Secure settings (Accessibility guard)", PermissionFix.SECURE);
         item(a, panel, "Debugging access (System apps)", PermissionFix.DEBUGGING);
     }
 }
